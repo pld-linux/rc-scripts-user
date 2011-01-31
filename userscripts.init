@@ -70,8 +70,14 @@ run_scripts()
 		for script in "$home/$scripts_dir"/*; do
 
 			# skip backups
-			[[ $script == *~ ]] && continue
-			[[ $script == *.bak ]] && continue
+			case $script in
+				*~)
+					continue
+					;;
+				*.bak)
+					continue
+					;;
+			esac
 
 			show "Running %s %s as %s" "$script" "$action" "$user"
 			busy
@@ -81,10 +87,15 @@ run_scripts()
 				continue
 			fi
 
-			nice -n "$NICE" su - "$user" "$script" "$action" > /dev/null 2>&1 &
-			ok
-
-			: $((SCRIPTS_RUN++))
+			/sbin/run-fast-or-hide -n "$NICE" -u "$user" -- "$script" "$action"
+			local RET=$?
+			deltext
+			if [ $RET -eq 250 ]; then
+				progress "WORKING"; echo
+				: $((SCRIPTS_RUN++))
+			else
+				[ $RET -eq 0 ] && ok || fail
+			fi
 		done
 	done < /etc/passwd
 }
