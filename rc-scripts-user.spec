@@ -2,7 +2,7 @@
 Summary:	Run user scripts
 Summary(pl.UTF-8):	Uruchom skrypty użytkownika
 Name:		rc-scripts-user
-Version:	1.3
+Version:	1.4
 Release:	1
 License:	GPL v2+
 Group:		Applications/System
@@ -47,10 +47,14 @@ BANNED=""
 
 # userscripts does not wait for user actions to finish, how much time,
 # in seconds, should it wait before continuing system shutdown.
-STOP_WAIT_TIME=5
+STOP_WAIT_TIME=2
 
 # Script priority
 NICE=15
+
+# additional arguments for run-fast-or-hide,
+# check: run-fast-or-hide --help for more info
+# RUN_ARGS="-s 50000"
 
 EOF
 

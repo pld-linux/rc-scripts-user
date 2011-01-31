@@ -12,8 +12,9 @@
 
 ALLOWED=""
 BANNED=""
-STOP_WAIT_TIME=5
+STOP_WAIT_TIME=2
 NICE=15
+RUN_ARGS=""
 
 # subdirectory with user scripts
 scripts_dir=".config/init.d"
@@ -84,7 +85,7 @@ run_scripts()
 				continue
 			fi
 
-			/sbin/run-fast-or-hide -n "$NICE" -u "$user" -- "$script" "$action"
+			/sbin/run-fast-or-hide -n "$NICE" -u "$user" $RUN_ARGS -- "$script" "$action"
 			local RET=$?
 			deltext
 			if [ $RET -eq 250 ]; then
