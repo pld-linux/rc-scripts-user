@@ -53,7 +53,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/chkconfig --add userscripts
-%service userscripts restart
 
 %preun
 if [ "$1" = "0" ]; then
