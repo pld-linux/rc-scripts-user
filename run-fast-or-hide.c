@@ -30,6 +30,13 @@
 static pid_t our_child = 0;
 
 static void
+die( const char *msg )
+{
+	fprintf(stderr, "ERROR: %s\n", msg);
+	exit( 127 );
+}
+
+static void
 cb_sigchld( int signum )
 {
 	int status;
@@ -79,7 +86,7 @@ mysleep( long int sleep_usec )
 	return;
 }
 
-int
+static int
 run_child( int verbose, struct passwd *pw, int nicelevel, char * const *argv )
 {
 	if ( nicelevel )
@@ -87,13 +94,13 @@ run_child( int verbose, struct passwd *pw, int nicelevel, char * const *argv )
 
 	if ( pw != NULL ) {
  		if ( setgid( pw->pw_gid ) )
-			exit( 1 );
+			die( "cannot set gid" );
 		if ( initgroups( pw->pw_name, pw->pw_gid ) )
-			exit( 1 );
+			die( "cannot init group list" );
 		if ( setuid( pw->pw_uid ) )
-			exit( 1 );
+			die( "cannot set uid" );
 		if ( chdir( pw->pw_dir ) )
-			exit( 1 );
+			die( "cannot change directory" );
 	}
 
 	if ( ! verbose ) {
@@ -107,14 +114,7 @@ run_child( int verbose, struct passwd *pw, int nicelevel, char * const *argv )
 	return 127;
 }
 
-void
-die( const char *msg )
-{
-	fprintf(stderr, "ERROR: %s\n", msg);
-	exit( 127 );
-}
-
-void
+static void
 show_help( void )
 {
 	printf(
@@ -154,7 +154,7 @@ main( int argc, char **argv )
 		{ "sleep",	  1, NULL, 's' },
 		{ "user",	  1, NULL, 'u' },
 		{ "nice",	  1, NULL, 'n' },
-		{ "quiet",	  0, NULL, 'q' },
+		{ "verbose",	  0, NULL, 'v' },
 		{ NULL,		0, NULL, 0 }
 	};
 
