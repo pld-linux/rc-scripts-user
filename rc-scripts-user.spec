@@ -6,7 +6,7 @@ Version:	1.5
 Release:	1
 License:	GPL v2+
 Group:		Applications/System
-Source0:	userscripts
+Source0:	userscripts.init
 Source1:	run-fast-or-hide.c
 URL:		http://www.pld-linux.org/Packages/UserScripts
 BuildRequires:	rpmbuild(macros) >= 1.228
@@ -32,8 +32,8 @@ rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT/etc/{sysconfig,rc.d/init.d}
 install -d $RPM_BUILD_ROOT/sbin
 
-install run-fast-or-hide $RPM_BUILD_ROOT/sbin
-install %{SOURCE0} $RPM_BUILD_ROOT/etc/rc.d/init.d/userscripts
+install -p run-fast-or-hide $RPM_BUILD_ROOT/sbin
+install -p %{SOURCE0} $RPM_BUILD_ROOT/etc/rc.d/init.d/userscripts
 
 cat <<'EOF' > $RPM_BUILD_ROOT/etc/sysconfig/userscripts
 # If ALLOWED list is not empty, only users from this list will be able
