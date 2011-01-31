@@ -62,7 +62,7 @@ set_sigchld( void )
 }
 
 /* usleep will be interrupted by sigchld, this thing makes sure we wait
- * specified ammount of time if there was no child, or it wasn't the right one */
+ * specified amount of time if there was no child, or it wasn't the right one */
 static void
 mysleep( long int sleep_usec )
 {
