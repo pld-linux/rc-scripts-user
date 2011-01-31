@@ -22,7 +22,7 @@ if [ -f /etc/sysconfig/userscripts ]; then
 	. /etc/sysconfig/userscripts
 fi
 
-VALID_SHELLS=$(< /etc/shells)
+VALID_SHELLS=$(cat /etc/shells)
 
 is_on_list()
 {
@@ -71,10 +71,7 @@ run_scripts()
 
 			# skip backups
 			case $script in
-				*~)
-					continue
-					;;
-				*.bak)
+				*~|*.bak)
 					continue
 					;;
 			esac
@@ -91,7 +88,7 @@ run_scripts()
 			local RET=$?
 			deltext
 			if [ $RET -eq 250 ]; then
-				progress "WORKING"; echo
+				started
 				: $((SCRIPTS_RUN++))
 			else
 				[ $RET -eq 0 ] && ok || fail
