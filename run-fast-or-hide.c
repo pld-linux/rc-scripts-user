@@ -22,6 +22,11 @@
 #include <stdio.h>
 #include <fcntl.h> /* O_RDWR */
 
+#ifndef SLEEP_TIME
+/* 100 msec should be more than enough */
+# define SLEEP_TIME 100000
+#endif
+
 static pid_t our_child = 0;
 
 static void
@@ -142,7 +147,7 @@ main( int argc, char **argv )
 	struct passwd *pw = NULL;
 	int nicelevel = 0;
 	int verbose = 0;
-	long int sleep_time = 500000;
+	long int sleep_time = SLEEP_TIME;
 
 	static const struct option longopts[] = {
 		{ "help",	  0, NULL, 'h' },
