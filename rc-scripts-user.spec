@@ -2,7 +2,7 @@
 Summary:	Run user scripts
 Summary(pl.UTF-8):	Uruchom skrypty użytkownika
 Name:		rc-scripts-user
-Version:	1.4
+Version:	1.5
 Release:	1
 License:	GPL v2+
 Group:		Applications/System

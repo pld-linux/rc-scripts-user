@@ -85,7 +85,7 @@ run_scripts()
 				continue
 			fi
 
-			/sbin/run-fast-or-hide -n "$NICE" -u "$user" $RUN_ARGS -- "$script" "$action"
+			su - "$user" -c "exec /sbin/run-fast-or-hide -n '$NICE' $RUN_ARGS -- '$script' '$action'"
 			local RET=$?
 			deltext
 			if [ $RET -eq 250 ]; then
