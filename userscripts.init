@@ -70,7 +70,7 @@ run_scripts()
 
 	SCRIPTS_RUN=0
 	local IFS=":"
-	while read user pass uid gid name home shell; do
+	getent passwd | while read user pass uid gid name home shell; do
 		[ -d "$home/$scripts_dir" ] || continue
 
 		if ! is_allowed "$user" "$shell"; then
@@ -101,7 +101,7 @@ run_scripts()
 				continue
 			fi
 
-			su - "$user" -c "exec /sbin/run-fast-or-hide -n '$NICE' $RUN_ARGS -- '$script' '$action'"
+			su - "$user" -s /bin/sh -c "exec /sbin/run-fast-or-hide -n '$NICE' $RUN_ARGS -- '$script' '$action'"
 			local RET=$?
 			deltext
 			if [ $RET -eq 250 ]; then
@@ -111,7 +111,7 @@ run_scripts()
 				[ $RET -eq 0 ] && ok || fail
 			fi
 		done
-	done < /etc/passwd
+	done
 }
 
 start()
