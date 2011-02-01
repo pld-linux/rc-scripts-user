@@ -14,6 +14,7 @@ ALLOWED=""
 BANNED=""
 STOP_WAIT_TIME=2
 NICE=15
+MAX_USER_SCRIPTS=20
 RUN_ARGS=""
 
 # subdirectory with user scripts
@@ -23,7 +24,16 @@ if [ -f /etc/sysconfig/userscripts ]; then
 	. /etc/sysconfig/userscripts
 fi
 
-VALID_SHELLS=$(cat /etc/shells)
+service_name="User init.d scripts"
+
+VALID_SHELLS=""
+while read shell; do
+	case $shell in
+		/*)
+			[ -x "$shell" ] && VALID_SHELLS="$VALID_SHELLS $shell"
+			;;
+	esac
+done < /etc/shells
 
 is_on_list()
 {
@@ -68,6 +78,7 @@ run_scripts()
 			continue
 		fi
 
+		local USER_SCRIPTS=0
 		for script in "$home/$scripts_dir"/*; do
 
 			# skip backups
@@ -76,6 +87,11 @@ run_scripts()
 					continue
 					;;
 			esac
+
+			if [ $((USER_SCRIPTS++)) -ge $MAX_USER_SCRIPTS ]; then
+				nls "Maximum number of scripts run for %s was reached" "$user"
+				break
+			fi
 
 			show "Running %s %s as %s" "$script" "$action" "$user"
 			busy
@@ -101,11 +117,11 @@ run_scripts()
 start()
 {
 	if [ -f /var/lock/subsys/userscripts ]; then
-		msg_already_running "User scripts"
+		msg_already_running "$service_name"
 		return 1
 	fi
 
-	msg_starting "User scripts"; ok
+	msg_starting "$service_name"; ok
 
 	run_scripts start
 
@@ -115,13 +131,13 @@ start()
 stop()
 {
 	if [ ! -f /var/lock/subsys/userscripts ]; then
-		msg_not_running "User scripts"
+		msg_not_running "$service_name"
 		return 2
 	fi
 
 	run_scripts stop
 
-	msg_stopping "User scripts"; busy
+	msg_stopping "$service_name"; busy
 
 	# give them some time to stop, but don't wait for finish
 	[ "$SCRIPTS_RUN" -gt 0 ] && sleep $STOP_WAIT_TIME
@@ -133,9 +149,9 @@ stop()
 status()
 {
 	if [ -f /var/lock/subsys/userscripts ]; then
-		nls "User scripts should be running";
+		nls "$service_name should be running";
 	else
-		nls "User scripts should be stopped";
+		nls "$service_name should be stopped";
 	fi
 }
 

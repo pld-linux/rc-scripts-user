@@ -2,7 +2,7 @@
 Summary:	Run user scripts
 Summary(pl.UTF-8):	Uruchom skrypty użytkownika
 Name:		rc-scripts-user
-Version:	1.5
+Version:	1.6
 Release:	1
 License:	GPL v2+
 Group:		Applications/System
@@ -51,6 +51,9 @@ STOP_WAIT_TIME=2
 
 # Script priority
 NICE=15
+
+# maximum number of scripts run for every user
+MAX_USER_SCRIPTS=20
 
 # additional arguments for run-fast-or-hide,
 # check: run-fast-or-hide --help for more info
