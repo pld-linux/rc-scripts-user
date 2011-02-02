@@ -81,9 +81,11 @@ run_scripts()
 		local USER_SCRIPTS=0
 		for script in "$home/$scripts_dir"/*; do
 
-			# skip backups
+			# skip unrecognized files
 			case $script in
-				*~|*.bak)
+				*.init|*.sh)
+					;;
+				*)
 					continue
 					;;
 			esac
@@ -146,6 +148,29 @@ stop()
 	rm -f /var/lock/subsys/userscripts
 }
 
+restart()
+{
+	if [ ! -f /var/lock/subsys/userscripts ]; then
+		msg_not_running "$service_name"
+		start
+		return $?
+	fi
+
+	show "Restarting %s service" "$service_name"; ok
+	run_scripts restart
+}
+
+reload()
+{
+	if [ ! -f /var/lock/subsys/userscripts ]; then
+		msg_not_running "$service_name"
+		return 2
+	fi
+
+	msg_reloading "$service_name"; ok
+	run_scripts reload
+}
+
 status()
 {
 	if [ -f /var/lock/subsys/userscripts ]; then
@@ -167,13 +192,14 @@ case "$1" in
   	status)
 		status
 		;;
-	restart|force-reload)
-		stop
-		start
-		exit $?
+	restart)
+		restart
+		;;
+	reload|force-reload)
+		reload
 		;;
 	*)
-		msg_usage "$0 {start|stop|restart|force-reload|status}"
+		msg_usage "$0 {start|stop|restart|reload|force-reload|status}"
 		exit 3
 esac
 
