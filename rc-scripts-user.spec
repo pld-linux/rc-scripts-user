@@ -2,7 +2,7 @@
 Summary:	Run user scripts
 Summary(pl.UTF-8):	Uruchom skrypty użytkownika
 Name:		rc-scripts-user
-Version:	1.7
+Version:	1.8
 Release:	1
 License:	GPL v2+
 Group:		Applications/System
@@ -66,6 +66,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/chkconfig --add userscripts
+%service -q userscripts restart
 
 %preun
 if [ "$1" = "0" ]; then
