@@ -8,10 +8,13 @@ License:	GPL v2+
 Group:		Applications/System
 Source0:	userscripts.init
 Source1:	run-fast-or-hide.c
+Source2:	userscripts.service
 URL:		https://www.pld-linux.org/Packages/UserScripts
-BuildRequires:	rpmbuild(macros) >= 1.228
+BuildRequires:	rpmbuild(macros) >= 1.671
 Requires(post,preun):	/sbin/chkconfig
+Requires(post,preun,postun):	systemd-units >= 38
 Requires:	rc-scripts
+Requires:	systemd-units >= 38
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -32,9 +35,11 @@ cp -p %{SOURCE1} .
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT/etc/{sysconfig,rc.d/init.d}
 install -d $RPM_BUILD_ROOT/sbin
+install -d $RPM_BUILD_ROOT%{systemdunitdir}
 
 install -p run-fast-or-hide $RPM_BUILD_ROOT/sbin
 install -p %{SOURCE0} $RPM_BUILD_ROOT/etc/rc.d/init.d/userscripts
+cp -p %{SOURCE2} $RPM_BUILD_ROOT%{systemdunitdir}/userscripts.service
 
 cat <<'EOF' > $RPM_BUILD_ROOT/etc/sysconfig/userscripts
 # If ALLOWED list is not empty, only users from this list will be able
@@ -68,15 +73,21 @@ rm -rf $RPM_BUILD_ROOT
 %post
 /sbin/chkconfig --add userscripts
 %service -q userscripts restart
+%systemd_post userscripts.service
 
 %preun
 if [ "$1" = "0" ]; then
 	%service -q userscripts stop
 	/sbin/chkconfig --del userscripts
 fi
+%systemd_preun userscripts.service
+
+%postun
+%systemd_reload
 
 %files
 %defattr(644,root,root,755)
 %attr(755,root,root) /sbin/run-fast-or-hide
 %attr(754,root,root) /etc/rc.d/init.d/userscripts
 %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/userscripts
+%{systemdunitdir}/userscripts.service

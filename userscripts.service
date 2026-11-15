@@ -1,0 +1,14 @@
+[Unit]
+Description=User init.d scripts
+# home directories may live on NFS, users may come from LDAP/sssd
+After=network.target remote-fs.target nss-user-lookup.target systemd-user-sessions.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/etc/rc.d/init.d/userscripts start
+ExecReload=/etc/rc.d/init.d/userscripts reload
+ExecStop=/etc/rc.d/init.d/userscripts stop
+
+[Install]
+WantedBy=multi-user.target
