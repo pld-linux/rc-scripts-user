@@ -3,12 +3,12 @@ Summary:	Run user scripts
 Summary(pl.UTF-8):	Uruchom skrypty użytkownika
 Name:		rc-scripts-user
 Version:	1.8
-Release:	1
+Release:	2
 License:	GPL v2+
 Group:		Applications/System
 Source0:	userscripts.init
 Source1:	run-fast-or-hide.c
-URL:		http://www.pld-linux.org/Packages/UserScripts
+URL:		https://www.pld-linux.org/Packages/UserScripts
 BuildRequires:	rpmbuild(macros) >= 1.228
 Requires(post,preun):	/sbin/chkconfig
 Requires:	rc-scripts
@@ -22,10 +22,11 @@ Uruchom skrypty użytkownika przy starcie oraz wyłączaniu systemu.
 
 %prep
 %setup -q -c -T
-awk '/Version/ { v=$4 } END { exit v != "%{version}" }' < %{SOURCE0}
+awk '/Version/ { v=$3 } END { exit v != "%{version}" }' < %{SOURCE0}
+cp -p %{SOURCE1} .
 
 %build
-%{__cc} %{rpmcppflags} %{rpmcppflags} -Wall %{rpmldflags} %{SOURCE1} -o run-fast-or-hide
+%{__cc} %{rpmcflags} %{rpmcppflags} -Wall %{rpmldflags} run-fast-or-hide.c -o run-fast-or-hide
 
 %install
 rm -rf $RPM_BUILD_ROOT

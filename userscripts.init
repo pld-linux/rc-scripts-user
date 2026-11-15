@@ -2,7 +2,7 @@
 #
 # userscripts:	Executes user-defined events.
 #
-# Version:	$Revision$
+# Version:	1.8
 #
 # chkconfig:	345 99 01
 # description:	Executes $HOME/.config/init.d/* start on startup,
@@ -70,7 +70,7 @@ run_scripts()
 
 	SCRIPTS_RUN=0
 	local IFS=":"
-	getent passwd | while read user pass uid gid name home shell; do
+	while read user pass uid gid name home shell; do
 		[ -d "$home/$scripts_dir" ] || continue
 
 		if ! is_allowed "$user" "$shell"; then
@@ -103,7 +103,7 @@ run_scripts()
 				continue
 			fi
 
-			su - "$user" -s /bin/sh -c "exec /sbin/run-fast-or-hide -n '$NICE' $RUN_ARGS -- '$script' '$action'"
+			su - "$user" -s /bin/sh -c "exec /sbin/run-fast-or-hide -n '$NICE' $RUN_ARGS -- '$script' '$action'" < /dev/null
 			local RET=$?
 			deltext
 			if [ $RET -eq 250 ]; then
@@ -113,7 +113,9 @@ run_scripts()
 				[ $RET -eq 0 ] && ok || fail
 			fi
 		done
-	done
+	done <<-EOF
+	$(getent passwd)
+	EOF
 }
 
 start()

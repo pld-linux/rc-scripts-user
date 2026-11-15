@@ -21,6 +21,7 @@
 #include <grp.h> /* initgroups */
 #include <stdio.h>
 #include <fcntl.h> /* O_RDWR */
+#include <errno.h> /* errno */
 
 #ifndef SLEEP_TIME
 /* 100 msec should be more than enough */
@@ -89,8 +90,12 @@ mysleep( long int sleep_usec )
 static int
 run_child( int verbose, struct passwd *pw, int nicelevel, char * const *argv )
 {
-	if ( nicelevel )
-		nice( nicelevel );
+	if ( nicelevel ) {
+		/* nice() may legitimately return -1, only errno tells a failure */
+		errno = 0;
+		if ( nice( nicelevel ) == -1 && errno != 0 )
+			perror( "nice" );
+	}
 
 	if ( pw != NULL ) {
  		if ( setgid( pw->pw_gid ) )
